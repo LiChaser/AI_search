@@ -1,6 +1,8 @@
 # AI_search
 来自某某AI审计工具的二开版本(申明此为娱乐工具，实用性难以保证，因测评需要故为制作，有意者可以自己来玩玩)
 
+在config里面配置ollama对应的模型就可以了
+
 先看下运行图
 
 ![屏幕截图 2025-02-14 210654](https://github.com/user-attachments/assets/d2be7553-63ed-413f-b5d9-3e5ac5f9da3a)
