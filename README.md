@@ -1,4 +1,7 @@
 # AI_search
+
+前置文章介绍 https://mp.weixin.qq.com/s/LX5TI-iEvlDACO-HD7hOPA
+
 来自某某AI审计工具的二开版本(申明此为娱乐工具，实用性难以保证，因测评需要故为制作，有意者可以自己来玩玩)
 
 在config里面配置ollama对应的模型就可以了
