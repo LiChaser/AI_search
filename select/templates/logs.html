@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>日志筛选系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body class="bg-light">
+<div class="container my-4">
+    <h2 class="mb-4">日志筛选系统</h2>
+
+    <!-- 日期筛选表单部分 -->
+    <form id="filter-form" class="row g-3">
+        <!-- 日志级别 -->
+        <div class="col-md-2">
+            <select id="level" class="form-select">
+                <option value="">全部级别</option>
+                <option value="DEBUG">DEBUG</option>
+                <option value="INFO">INFO</option>
+                <option value="WARNING">WARNING</option>
+                <option value="ERROR">ERROR</option>
+                <option value="CRITICAL">CRITICAL</option>
+            </select>
+        </div>
+
+        <!-- 开始日期 -->
+        <div class="col-md-3">
+            <input type="date" id="start_date" class="form-control" placeholder="开始日期">
+        </div>
+
+        <!-- 结束日期 -->
+        <div class="col-md-3">
+            <input type="date" id="end_date" class="form-control" placeholder="结束日期">
+        </div>
+
+        <!-- 关键词 -->
+        <div class="col-md-2">
+            <input type="text" id="keyword" class="form-control"
+                    placeholder="关键词"
+                    data-bs-toggle="tooltip"
+                    title="支持多个关键词搜索，用空格分隔，支持 AND/OR 语法，如：错误 OR 超时">
+
+        </div>
+
+        <!-- 按钮区域：筛选 + 清空 -->
+        <div class="col-md-1 d-grid">
+            <button type="submit" class="btn btn-primary">筛选</button>
+        </div>
+
+        <div class="col-md-1 d-grid">
+            <button type="button" id="reset-btn" class="btn btn-secondary">清空</button>
+        </div>
+    </form>
+
+
+    <div class="mt-4">
+        <table class="table table-bordered table-striped" id="logs-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>时间戳</th>
+                <th>级别</th>
+                <th>内容</th>
+                <th>来源</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById('filter-form');
+    const tableBody = document.querySelector('#logs-table tbody');
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        loadLogs();
+    });
+
+    async function loadLogs() {
+        const level = document.getElementById('level').value;
+        const start_date = document.getElementById('start_date').value;
+        const end_date = document.getElementById('end_date').value;
+        const keyword = document.getElementById('keyword').value;
+
+        const params = new URLSearchParams();
+        if (level) params.append('level', level);
+        if (start_date) params.append('start_time', start_date + ' 00:00:00');
+        if (end_date) params.append('end_time', end_date + ' 23:59:59');
+        if (keyword) params.append('keyword', keyword);
+
+        try {
+            const response = await fetch(`/api/logs?${params.toString()}`);
+            const data = await response.json();
+            tableBody.innerHTML = '';
+
+            if (data.logs && data.logs.length > 0) {
+                data.logs.forEach(log => {
+                    const row = `
+            <tr>
+              <td>${log.id}</td>
+              <td>${log.timestamp}</td>
+              <td>${log.level}</td>
+              <td>${log.message}</td>
+              <td>${log.source || '—'}</td>
+            </tr>
+          `;
+                    tableBody.insertAdjacentHTML('beforeend', row);
+                });
+            } else {
+                tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">没有匹配的日志</td></tr>';
+            }
+        } catch (err) {
+            console.error('获取日志失败:', err);
+            tableBody.innerHTML = '<tr><td colspan="4" class="text-danger text-center">请求失败</td></tr>';
+        }
+    }
+
+
+
+    // 清空按钮逻辑
+    document.getElementById('reset-btn').addEventListener('click', function () {
+        document.getElementById('level').value = '';
+        document.getElementById('start_date').value = '';
+        document.getElementById('end_date').value = '';
+        document.getElementById('keyword').value = '';
+        loadLogs(); // 清空后重新加载所有日志
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+            new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+    // 初次加载所有日志
+    loadLogs();
+</script>
+
+</body>
+</html>

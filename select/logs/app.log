@@ -1,0 +1,6 @@
+2024-06-02 14:20:01 [INFO] user.module - 用户登录成功：user123
+2024-06-02 14:21:45 [WARNING] auth.module - 尝试使用过期的Token访问接口
+2024-06-02 14:22:10 [ERROR] payment.module - 支付失败：订单ID 789456，余额不足
+2024-06-02 14:23:33 [DEBUG] system.monitor - 当前CPU使用率为32%
+2024-06-02 14:24:55 [CRITICAL] database.core - 数据库连接失败，无法恢复
+2024-06-02 14:25:15 [INFO] scheduler.job - 定时任务执行成功：log_backup
